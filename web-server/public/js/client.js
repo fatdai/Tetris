@@ -1,10 +1,6 @@
 /**
  * Created by mac on 15/7/6.
  */
-
-
-
-
 window.onload = function(){
     var startbtn = document.getElementById('loginbtn');
     startbtn.onclick = function(){
@@ -27,6 +23,13 @@ window.onload = function(){
             var route = "connector.entryHandler.login";
             var msg = { name : name };
             pomelo.request(route,msg,function(data){
+
+                if(data.code == consts.MESSAGE.ERR){
+                    alert(name + "    already exsit!");
+                    pomelo.disconnect();
+                    return;
+                }
+
                 if(data.code == consts.MESSAGE.RES){
                     var playerId = data.playerId;
                     console.log("playerId:"+playerId);
@@ -42,6 +45,7 @@ window.onload = function(){
                     context.font = 20 + "px Arial";
                     context.fillText(name + "   login success!!!",canvas.width/2,canvas.height/2);
                 }
+
             });
         });
     };

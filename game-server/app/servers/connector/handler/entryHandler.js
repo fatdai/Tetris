@@ -1,6 +1,7 @@
 
 var consts = require('../../../models/consts');
 var game = require('../../../models/game');
+var Player = require('../../../models/player');
 
 module.exports = function (app) {
     return new Handler(app);
@@ -61,10 +62,33 @@ Handler.prototype.login = function (msg, session, next) {
     var name = msg.name;
 
     // 检查是否存在同名的情况
-    var player = game
+    var players = game.players();
+    for(var i in players){
+        if(players[i].name == name){
+            next(null,{
+                code : consts.MESSAGE.ERR
+            });
+            return;
+        }
+    }
 
+
+    //*****************************************
+    // 是有效的用户,需要加入到 game
     var playerId = id++;
     console.log("playerId:" + playerId);
+
+    var player = new Player({
+        name : name,
+        id : playerId
+    });
+    game.addPlayer(player);
+    if(game.hasChannel()){
+
+    }else{
+
+    }
+
 
     session.bind(playerId);
     session.set('playerId', playerId);

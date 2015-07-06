@@ -8,6 +8,7 @@ module.exports = {
     ERR_SESSION_NOT_EXIST   : -11,	// session not exist
     ERR_CHANNEL_DUPLICATE   : -12,	// channel duplicated
     ERR_CHANNEL_NOT_EXIST   : -13		// channel not exist
+
   },
 
   MESSAGE: {

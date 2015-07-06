@@ -12,12 +12,22 @@ game.init = function(){
     setInterval(tick,100);
 };
 
-game.prototype.getPlayer = function(playerId){
-    return players[playerId];
+game.addPlayer = function(player){
+    players[player.id] = player;
 }
 
-game.prototype.players = function(){
+game.getPlayer = function(playerId){
+    return players[playerId];
+};
+
+game.players = function(){
     return players;
+};
+
+game.hasChannel = function(){
+    for(var i in channels){
+
+    }
 }
 
 //*********************************************
