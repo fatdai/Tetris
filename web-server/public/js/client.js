@@ -2,6 +2,7 @@
  * Created by mac on 15/7/6.
  */
 window.onload = function(){
+
     var startbtn = document.getElementById('loginbtn');
     startbtn.onclick = function(){
         var name = $('#name').val().trim();
@@ -30,22 +31,54 @@ window.onload = function(){
                     return;
                 }
 
-                if(data.code == consts.MESSAGE.RES){
-                    var playerId = data.playerId;
-                    console.log("playerId:"+playerId);
+                app.createCanvas();
+                app.msgHandler();
+                app.start();
 
-                    // 创建 canvas
-                    $('#user').append('<canvas id="mycanvas" width="640px" height="480px" style="border: 1px solid"></canvas>');
-                    var canvas = document.getElementById('mycanvas');
-                    var context = canvas.getContext('2d');
-                    app.canvas = canvas;
-                    app.context = context;
-                    context.fillRect(0,0,canvas.width,canvas.height);
-                    context.fillStyle = '#ff0000';
-                    context.font = 20 + "px Arial";
-                    context.fillText(name + "   login success!!!",canvas.width/2,canvas.height/2);
+                console.log("----------------------------------");
+                if(data.code == consts.MESSAGE.STARTGAME){
+
+                    // 隐藏输入名字的地方
+                    $('#inputdiv').hide();
+
+                    // 可以开始游戏
+                    var room = new Room(data.room);
+                    room.player = new Player({
+                        name : data.room.player.name,
+                        id : data.room.player.id
+                    });
+                    room.opponent = new Player({
+                        name : data.room.opponent.name,
+                        id : data.room.opponent.id,
+                        host : true
+                    });
+
+                    app.room = room;
+                    app.player = room.player;
+
+                    app.state = State.READY;
+
+                    // 告诉服务器准备好了
+                    // 服务端发现两边都准备好了后,服务端开始
+                    app.player.ready();
+
+                }else if(data.code == consts.MESSAGE.RES){
+
+                    $('#inputdiv').hide();
+
+                    var room = new Room(data.player);
+                    room.player = new Player({
+                        name : data.player.name,
+                        id : data.player.id,
+                        host : true
+                    });
+
+                    app.room = room;
+                    app.player = room.player;
+
+                    // 等待玩家
+                    app.state = State.WAITING;
                 }
-
             });
         });
     };

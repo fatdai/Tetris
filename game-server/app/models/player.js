@@ -9,6 +9,9 @@ function Player(opts){
     this.name = opts.name || 'defailt name';
     this.id = opts.id || id++;
     this.channelId = opts.channelId || -1;
+    this.sid = opts.sid;
+    this.ready = false;
+    this.host = false;
 }
 
 

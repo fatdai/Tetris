@@ -14,7 +14,8 @@ module.exports = {
   MESSAGE: {
     RES: 200,
     ERR: 500,
-    PUSH: 600
+    PUSH: 600,
+    STARTGAME:700   // 开始游戏
   },
 
   EntityType: {
