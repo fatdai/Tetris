@@ -20,7 +20,6 @@
     var app = {};
     app.canvas = null;
     app.context = null;
-    app.player = null;
     app.room = null;
     app.state = State.LOGINING;  // 游戏状态
 
@@ -76,11 +75,13 @@
 
         }else if(this.state == State.GAMING){
 
+            this.context.font = 20 + "px Arial";
+
             // 绘制本体的东西
-            this.player.drawMap(this.context);
+            this.room.player.drawMap(this.context);
 
             // 绘制中线
-            this.player.drawMiddleLine(this.context);
+            this.room.player.drawMiddleLine(this.context);
 
             // 绘制对手的东西
             this.room.opponent.drawMap(this.context);
@@ -98,7 +99,7 @@
         // onReady
         pomelo.on('onReady',function(data){
             console.log('receive onReady event');
-            if(data.opponent.id != self.player.id){
+            if(data.opponent.id != self.room.player.id){
                 // 收都的是对手的信息
                 self.room.opponent = new Player({
                     name:data.opponent.name,
@@ -106,8 +107,7 @@
                 });
 
                 self.state = State.READY;
-
-                self.player.ready();
+                self.room.player.ready();
             }
         });
 
@@ -119,7 +119,7 @@
         // msg
         pomelo.on('onGameStart',function(){
             console.log(">>>>>>>>> received onGameStart");
-            app.state = State.GAMING;
+            self.state = State.GAMING;
         });
     };
 

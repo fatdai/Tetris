@@ -44,23 +44,21 @@ window.onload = function(){
                     // 可以开始游戏
                     var room = new Room(data.room);
                     room.player = new Player({
-                        name : data.room.player.name,
-                        id : data.room.player.id
+                        name : data.room.opponent.name,
+                        id : data.room.opponent.id
                     });
                     room.opponent = new Player({
-                        name : data.room.opponent.name,
-                        id : data.room.opponent.id,
+                        name : data.room.player.name,
+                        id : data.room.player.id,
                         host : true
                     });
 
                     app.room = room;
-                    app.player = room.player;
-
                     app.state = State.READY;
 
                     // 告诉服务器准备好了
                     // 服务端发现两边都准备好了后,服务端开始
-                    app.player.ready();
+                    room.player.ready();
 
                 }else if(data.code == consts.MESSAGE.RES){
 
@@ -74,7 +72,6 @@ window.onload = function(){
                     });
 
                     app.room = room;
-                    app.player = room.player;
 
                     // 等待玩家
                     app.state = State.WAITING;

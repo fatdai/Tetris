@@ -7,8 +7,8 @@ function Room(opts){
     this.name = opts.name;
     this.channel = opts.channel;
     this.isFull = false;
-    this.player = opts.player;
-    this.opponent = null;
+    this.player = opts.player;   // 表示 主机玩家
+    this.opponent = null;        // 表示非主机玩家
 }
 
 

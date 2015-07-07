@@ -62,6 +62,7 @@ Handler.prototype.login = function (msg, session, next) {
     var self = this;
     var name = msg.name;
     console.log("name:"+name);
+
     // 检查是否存在同名的情况
     var players = game.players();
     for(var i in players){
@@ -97,15 +98,14 @@ Handler.prototype.login = function (msg, session, next) {
     if(room.isFull){
         // 成功加入房间,可以马上准备开始游戏
         // 同时需要通知房主,告诉房主游戏可以开始了
+        next(null,{
+            code : consts.MESSAGE.STARTGAME,
+            room : room
+        });
 
         room.channel.pushMessage({
             route : 'onReady',
             opponent : player
-        });
-
-        next(null,{
-            code : consts.MESSAGE.STARTGAME,
-            room : room
         });
 
     }else{
@@ -133,11 +133,16 @@ Handler.prototype.ready = function(msg,session,next){
 
     // 如果两边都准备好了,则推送一个消息告诉客户端都准备好了
     if(room.player.ready && room.opponent.ready){
+
+        // 回复这个请求的客户端:我准备好了,同时通知另外一个客户端准备好了
+        next(null,{code:consts.MESSAGE.READY});
+
         room.channel.pushMessage({
             route : 'onGameStart'
         });
+    }else{
+        next(null,{code:consts.MESSAGE.RES});
     }
-    next(null,{code:consts.MESSAGE.RES});
 };
 
 

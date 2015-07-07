@@ -9,7 +9,6 @@
         opts = opts || {};
         this.name = opts.name || 'default name';
         this.id = opts.id || 0;
-        this.opponent = null;
         this.map = [];
         this.host = opts.host || false;
         for(var i = 0; i < 20; ++i){
@@ -61,7 +60,6 @@
             context.fillText(this.name,app.canvas.width/4,25);
         }
 
-
         context.restore();
     };
 
@@ -76,16 +74,19 @@
     Player.prototype.ready = function(){
         var route = 'connector.entryHandler.ready';
 
-        //console.log("app.player.name:"+app.player.name);
-        //console.log("app.player.opponent.name:"+app.player.opponent.name);
+        console.log("app.room.player.name:"+app.room.player.name);
+        console.log("app.player.opponent.name:"+app.room.opponent.name);
 
-        var roomname = app.player.host?app.player.name:app.room.opponent.name;
+        var roomname = app.room.player.host?app.room.player.name:app.room.opponent.name;
         var msg = {
             roomname : roomname,
-            playerId : app.player.id
+            playerId : app.room.player.id
         };
         pomelo.request(route,msg,function(data){
-
+            if(data.code == consts.MESSAGE.READY){
+                console.log("-------切换为Gaming State");
+                app.state = State.GAMING;
+            }
         });
     }
 
