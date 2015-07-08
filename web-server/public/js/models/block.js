@@ -10,9 +10,15 @@
         this.color = opts.color || '#000000';
         this.row = opts.row;
         this.column = opts.column;
-        this.arr = opts.arr.slice(0);
         this.x = opts.x || 0;
         this.y = opts.y || 0;
+        this.index = opts.index;
+
+        this.idx = opts.idx;
+        this.idy = opts.idy;
+
+        //this.arr = opts.arr.slice(0);
+        this.arr = Shape[this.index].arr.slice(0);
     };
 
 
@@ -35,6 +41,19 @@
         context.restore();
     }
 
-    window.Block = Block;
 
+    //**********************************************************
+    // Item
+    function Item(opts){
+        opts = opts || {};
+        this.color = opts.color || "#000";
+        this.value = opts.value;
+    };
+
+    Item.prototype.toString = function(){
+        return "color:" + this.color + "; value : " + this.value;
+    }
+
+    window.Block = Block;
+    window.Item = Item;
 })();

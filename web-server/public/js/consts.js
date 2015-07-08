@@ -13,8 +13,8 @@ var consts = {
     RES: 200,
     ERR: 500,
     PUSH: 600,
-    STARTGAME:700,   // 开始游戏
-    READY : 701    // 已经准备好了
+    SYNC: 601, // 同步消息
+    STARTGAME:700   // 开始游戏
   },
 
   EntityType: {

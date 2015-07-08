@@ -33,6 +33,24 @@
 
         time = Date.now();
 
+        var self = this;
+        window.addEventListener('keydown',function(event){
+            var key = event.keyCode;
+            if(key == keycode.LEFT){
+                self.left();
+            }else if(key == keycode.RIGHT){
+                self.right();
+            }else if(key == keycode.UP){
+                self.up();
+            }else if(key == keycode.DOWN){
+                self.down();
+            }
+
+            //else if(key == keycode.SPACE){
+            //    self.room.player.paused = !self.room.player.paused;
+            //}
+        });
+
         tick();
     };
 
@@ -50,13 +68,16 @@
         }
 
         window.requestAnimationFrame(tick);
-        app.logic();
+      //  app.logic();
         app.render();
     }
 
-    app.logic = function(){
-
-    };
+    //app.logic = function(){
+    //    if(this.state == State.GAMING){
+    //        this.room.player.update();
+    //        this.room.opponent.update();
+    //    }
+    //};
 
     app.render = function(){
 
@@ -116,11 +137,144 @@
 
         });
 
-        // msg
+        // onGameStart
         pomelo.on('onGameStart',function(){
             console.log(">>>>>>>>> received onGameStart");
             self.state = State.GAMING;
         });
+
+        //   onFallDown
+        pomelo.on('onFallDown',function(data){
+
+            var curBlock1 = new Block(data.curBlock1);  // 主机的
+            var nextBlock1 = new Block(data.nextBlock1);
+            var curBlock2 = new Block(data.curBlock2);
+            var nextBlock2 = new Block(data.nextBlock2);
+
+            if(self.room.player.host){
+                self.room.player.curBlock = curBlock1;
+                self.room.player.nextBlock = nextBlock1;
+                self.room.player.speed = data.speed1;
+
+                self.room.opponent.curBlock = curBlock2;
+                self.room.opponent.nextBlock = nextBlock2;
+                self.room.opponent.speed = data.speed2;
+            }else{
+                self.room.player.curBlock = curBlock2;
+                self.room.player.nextBlock = nextBlock2;
+                self.room.player.speed = data.speed2;
+
+                self.room.opponent.curBlock = curBlock1;
+                self.room.opponent.nextBlock = nextBlock1;
+                self.room.opponent.speed = data.speed1;
+            }
+
+            //self.room.player.fallDown();
+            //self.room.opponent.fallDown();
+        });
+
+        // onGameFail
+        pomelo.on('onGameFail',function(data){
+
+            if(data.code == consts.MESSAGE.RES){
+                var playerId = data.player.id;
+                if(self.room.player.id == playerId){
+                    // 自己挂了
+                    self.room.player.failed = true;
+                }else{
+                    // 别人挂了
+                    self.room.opponent.failed = true;
+                }
+            }
+        });
+
+
+        // onMessage
+        pomelo.on('onMessage',function(data){
+            if(data.code == consts.MESSAGE.SYNC){
+                var map1 = data.map1;
+                var map2 = data.map2;
+                var curBlock1 = new Block(data.curBlock1);  // 主机的
+                var nextBlock1 = new Block(data.nextBlock1);
+                var curBlock2 = new Block(data.curBlock2);
+                var nextBlock2 = new Block(data.nextBlock2);
+
+                // 进行同步内容
+                if(self.room.player.host){
+                    for(var i = 0; i < 20; ++i){
+                        for(var j = 0; j < 10; ++j){
+                            self.room.player.map[i][j].value = map1[i][j].value;
+                            self.room.player.map[i][j].color = map1[i][j].color;
+
+                            self.room.opponent.map[i][j].value = map2[i][j].value;
+                            self.room.opponent.map[i][j].color = map2[i][j].color;
+                        }
+                    }
+                    self.room.player.curBlock = curBlock1;
+                    self.room.player.nextBlock = nextBlock1;
+                    self.room.player.speed = data.speed1;
+
+                    self.room.opponent.curBlock = curBlock2;
+                    self.room.opponent.nextBlock = nextBlock2;
+                    self.room.opponent.speed = data.speed2;
+                }else{
+                    for(var i = 0; i < 20; ++i){
+                        for(var j = 0; j < 10; ++j){
+                            self.room.player.map[i][j].value = map2[i][j].value;
+                            self.room.player.map[i][j].color = map2[i][j].color;
+
+                            self.room.opponent.map[i][j].value = map1[i][j].value;
+                            self.room.opponent.map[i][j].color = map1[i][j].color;
+                        }
+                    }
+                    self.room.player.curBlock = curBlock2;
+                    self.room.player.nextBlock = nextBlock2;
+                    self.room.player.speed = data.speed2;
+
+                    self.room.opponent.curBlock = curBlock1;
+                    self.room.opponent.nextBlock = nextBlock1;
+                    self.room.opponent.speed = data.speed1;
+                }
+
+
+                //self.room.player.fallDown();
+                //self.room.opponent.fallDown();
+            }
+        });
+    };
+
+
+    app.left = function(){
+        // 告诉服务器需要左移动
+        // 暂时先不考虑用户体验(本来可以先处理,再验证)
+
+        var route = 'connector.entryHandler.left';
+        var msg = {
+            playerId:this.room.player.id,
+            roomname : this.room.name
+        };
+        pomelo.request(route,msg,function(data){
+
+        });
+    };
+
+    app.right = function(){
+        var route = 'connector.entryHandler.right';
+        var msg = {
+            playerId:this.room.player.id,
+            roomname : this.room.name
+        };
+        pomelo.request(route,msg,function(data){
+
+        });
+    };
+
+    app.up = function(){
+
+    };
+
+    app.down = function(){
+
     };
 
     app.createCanvas = function(){

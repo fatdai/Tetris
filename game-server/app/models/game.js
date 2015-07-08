@@ -37,6 +37,10 @@ game.allocationRoom = function(player){
         if(!rooms[i].isFull){
             rooms[i].opponent = player;
             rooms[i].isFull = true;
+
+            // 同时需要将 player 加入到 channel
+            rooms[i].channel.add(player.id,player.sid);
+
             return rooms[i];
         }
     }
@@ -59,8 +63,11 @@ game.allocationRoom = function(player){
 //*********************************************
 // private method
 function tick(){
-
-
+    //遍历所有的房间,处理每一个房间的逻辑
+    for(var i in rooms){
+        var room = rooms[i];
+        room.update();
+    }
 
 }
 

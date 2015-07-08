@@ -3,6 +3,8 @@ var consts = require('../../../models/consts');
 var game = require('../../../models/game');
 var Player = require('../../../models/player');
 var Room = require('../../../models/room');
+var Block = require('../../../models/block');
+var Data = require('../../../models/data');
 
 module.exports = function (app) {
     return new Handler(app);
@@ -134,20 +136,73 @@ Handler.prototype.ready = function(msg,session,next){
     // 如果两边都准备好了,则推送一个消息告诉客户端都准备好了
     if(room.player.ready && room.opponent.ready){
 
-        // 回复这个请求的客户端:我准备好了,同时通知另外一个客户端准备好了
-        next(null,{code:consts.MESSAGE.READY});
-
         room.channel.pushMessage({
             route : 'onGameStart'
         });
-    }else{
-        next(null,{code:consts.MESSAGE.RES});
+
+        room.ready = true;
+        room.startGame();
     }
+
+    next(null,{code:consts.MESSAGE.RES});
 };
 
+Handler.prototype.genBlock = function(msg,session,next){
+
+    var playerId = msg.playerId;
+    var roomname = msg.roomname;
+    var map = msg.map;
+
+    var room = game.getRoom(roomname);
+    var player = game.getPlayer(playerId);
+
+    for(var i = 0; i < 20; ++i){
+        for(var j = 0; j < 10; ++j){
+            player.map[i][j].value = map[i][j].value;
+            player.map[i][j].color = map[i][j].color;
+        }
+    }
+
+    player.curBlock = player.nextBlock;
+    player.curBlock.idx = Math.floor((10 - player.curBlock.column)/2);
+    player.curBlock.idy = 0;
+    player.curBlock.x = player.curBlock.idx * Data.Config.WIDTH;
+    player.curBlock.y = 80;
+
+    player.nextBlock = Block.randomBlock();
+    player.nextBlock.x = 260 - player.nextBlock.width/2;
+    player.nextBlock.y = 140 - player.nextBlock.height/2;
+
+    next(null,{
+        code : consts.MESSAGE.RES
+    });
+
+    // 将这个消息推送给客户端,让客户端进行同步下
+    room.sync();
+};
+
+Handler.prototype.left = function(msg,session,next){
+    var playerId = msg.playerId;
+    var player = game.getPlayer(playerId);
+    var room = game.getRoom(msg.roomname);
+
+    player.left();
+    next(null,{code:consts.MESSAGE.RES});
+    room.sync();
+};
+
+Handler.prototype.right = function(msg,session,next){
+    var playerId = msg.playerId;
+    var player = game.getPlayer(playerId);
+    var room = game.getRoom(msg.roomname);
+
+    player.right();
+    next(null,{code:consts.MESSAGE.RES});
+    room.sync();
+};
 
 var onUserLeave = function (app, session) {
     if (!!session && session.uid) {
         console.log('有用户离开......,应该销毁房间,暂时不实现');
     }
-}
+};
