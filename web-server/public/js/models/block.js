@@ -12,13 +12,14 @@
         this.column = opts.column;
         this.x = opts.x || 0;
         this.y = opts.y || 0;
-        this.index = opts.index;
+        //this.index = opts.index;
 
-        this.idx = opts.idx;
-        this.idy = opts.idy;
+        //this.idx = opts.idx;
+        //this.idy = opts.idy;
 
         //this.arr = opts.arr.slice(0);
-        this.arr = Shape[this.index].arr.slice(0);
+        this.arr = opts.arr.slice(0);
+            //Shape[this.index].arr.slice(0);
     };
 
 

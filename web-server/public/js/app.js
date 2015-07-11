@@ -245,6 +245,7 @@
 
 
     app.left = function(){
+        console.log("left");
         // 告诉服务器需要左移动
         // 暂时先不考虑用户体验(本来可以先处理,再验证)
 
@@ -253,28 +254,48 @@
             playerId:this.room.player.id,
             roomname : this.room.name
         };
-        pomelo.request(route,msg,function(data){
+        //pomelo.request(route,msg,function(data){
+        //
+        //});
 
-        });
+        pomelo.notify(route,msg);
     };
 
     app.right = function(){
+        console.log("right");
         var route = 'connector.entryHandler.right';
         var msg = {
             playerId:this.room.player.id,
             roomname : this.room.name
         };
-        pomelo.request(route,msg,function(data){
-
-        });
+        //pomelo.request(route,msg,function(data){
+        //
+        //});
+        pomelo.notify(route,msg);
     };
 
     app.up = function(){
 
+        console.log("up");
+        // 进行变型
+        var route = 'connector.entryHandler.up';
+        var msg = {
+            playerId:this.room.player.id,
+            roomname:this.room.name
+        };
+        pomelo.notify(route,msg);
     };
 
     app.down = function(){
+        console.log("down");
 
+        // 快速下落
+        var route = 'connector.entryHandler.down';
+        var msg = {
+            playerId:this.room.player.id,
+            roomname:this.room.name
+        };
+        pomelo.notify(route,msg);
     };
 
     app.createCanvas = function(){

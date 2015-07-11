@@ -186,9 +186,9 @@ Handler.prototype.left = function(msg,session,next){
     var player = game.getPlayer(playerId);
     var room = game.getRoom(msg.roomname);
 
-    player.left();
-    next(null,{code:consts.MESSAGE.RES});
-    room.sync();
+    if(player.left()){
+        room.sync();
+    }
 };
 
 Handler.prototype.right = function(msg,session,next){
@@ -196,10 +196,33 @@ Handler.prototype.right = function(msg,session,next){
     var player = game.getPlayer(playerId);
     var room = game.getRoom(msg.roomname);
 
-    player.right();
-    next(null,{code:consts.MESSAGE.RES});
-    room.sync();
+    if(player.right()){
+        room.sync();
+    }
 };
+
+Handler.prototype.up = function(msg,session,next){
+
+    var playerId = msg.playerId;
+    var player = game.getPlayer(playerId);
+    var room = game.getRoom(msg.roomname);
+
+    if(player.up()){
+        room.sync();
+    }
+};
+
+Handler.prototype.down = function(msg,session,next){
+
+    var playerId = msg.playerId;
+    var player = game.getPlayer(playerId);
+    var room = game.getRoom(msg.roomname);
+
+    if(player.down(room)){
+        room.sync();
+    }
+};
+
 
 var onUserLeave = function (app, session) {
     if (!!session && session.uid) {
